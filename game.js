@@ -10,8 +10,10 @@ let pets = {};
 let trash = {};
 let petContainers = {};
 let petSprites = {};
+let petModifiers = {};
 let foodSprites = {};
 let foodLevelSprites = [];
+let happyLevelSprites = [];
 let trashSprites = {};
 
 let petLayer;
@@ -36,10 +38,13 @@ const config = {
 
 function preload() {
     this.load.spritesheet('puchitomatchi', 'img/puchitomatchi.png', { frameWidth: 66, frameHeight: 68 });
+    this.load.spritesheet('puchitomatchi_weed', 'img/puchitomatchi_weed.png', { frameWidth: 66, frameHeight: 68 });
     this.load.spritesheet('food', 'img/food.png', { frameWidth: 26, frameHeight: 28 });
     this.load.image('scroll', 'img/scroll.png');
     this.load.image('poop', 'img/poop.png');
     this.load.image('bottle', 'img/bottle.png');
+    this.load.image('smile', 'img/smile.png');
+    this.load.image('smile_grey', 'img/smilegrey.png');
     this.load.image('heart_red', 'img/heartred.png');
     this.load.image('heart_grey', 'img/heartgrey.png');
 }
@@ -89,6 +94,12 @@ function create() {
         repeat: 0
     });
     this.anims.create({
+        key: 'puchitomatchi_sad',
+        frames: this.anims.generateFrameNumbers('puchitomatchi', { start: 2, end: 2 }),
+        frameRate: 2,
+        repeat: 0
+    });
+    this.anims.create({
         key: 'puchitomatchi_sick',
         frames: this.anims.generateFrameNumbers('puchitomatchi', { start: 13, end: 13 }),
         frameRate: 2,
@@ -125,13 +136,35 @@ function create() {
     petLayer.setDepth(1);
     trashLayer.setDepth(0);
 
-    this.add.sprite(config.width/2, 46, 'scroll').setScale(2);
+    this.add.sprite(config.width/2, 66, 'scroll').setScale(2);
 
     for (const pet of Object.values(pets)) {
         petContainers[pet.id.toString()] = this.add.container(0, PET_POS_Y);
         petLayer.add([petContainers[pet.id.toString()]]);
         petSprites[pet.id.toString()] = this.add.sprite(0, 0, pet.sprite_type).setScale(2);
         petContainers[pet.id.toString()].add(petSprites[pet.id.toString()]);
+
+        petModifiers[pet.id.toString()] = {
+            weed: this.add.sprite(0, 0, pet.sprite_type+'_weed').setScale(2).setVisible(false),
+        };
+        petContainers[pet.id.toString()].add(petModifiers[pet.id.toString()].weed);
+
+        // Sync modifiers
+        petSprites[pet.id.toString()].on('animationstart', (anim, frame) => {
+            for (let key in petModifiers[pet.id.toString()]) {
+                if (petModifiers[pet.id.toString()][key].visible) {
+                    petModifiers[pet.id.toString()][key].setFrame(frame.textureFrame);
+                }
+            }
+        });
+        petSprites[pet.id.toString()].on('animationupdate', (anim, frame) => {
+            for (let key in petModifiers[pet.id.toString()]) {
+                if (petModifiers[pet.id.toString()][key].visible) {
+                    petModifiers[pet.id.toString()][key].setFrame(frame.textureFrame);
+                }
+            }
+        });
+
         petContainers[pet.id.toString()].setPosition(getPetX(pet), PET_POS_Y);
         petSprites[pet.id.toString()].play(statusToAnim(pet));
 
@@ -142,10 +175,12 @@ function create() {
             foodSprites[pet.id.toString()].setVisible(false);
         });
 
-        petSprites[pet.id.toString()].setFlipX(pet.flip_x);
-        foodSprites[pet.id.toString()].setFlipX(pet.flip_x);
+        petContainers[pet.id.toString()].list.forEach(child => {
+            child.setFlipX(pet.flip_x);
+        });
 
         updateHearts(pet);
+        updateSmiles(pet);
     }
 
     for (let t of Object.values(trash)) {
@@ -160,6 +195,16 @@ function updateHearts(pet) {
     foodLevelSprites = []
     for (let i = 0; i < pet.max_food; i++) {
         foodLevelSprites.push(game.scene.scenes[0].add.sprite(config.width/2-40*(pet.max_food-1)/2+40*i, 46, pet.food >= i+1 ? 'heart_red' : 'heart_grey').setScale(2));
+    }
+}
+
+function updateSmiles(pet) {
+    for (let sprite of happyLevelSprites) {
+        sprite.destroy();
+    }
+    happyLevelSprites = []
+    for (let i = 0; i < pet.max_happiness; i++) {
+        happyLevelSprites.push(game.scene.scenes[0].add.sprite(config.width/2-40*(pet.max_happiness-1)/2+40*i, 88, pet.happiness >= i+1 ? 'smile' : 'smile_grey').setScale(2));
     }
 }
 
@@ -194,7 +239,7 @@ function update() {
 
 function addTrash(t) {
     trash[t.id] = t;
-    trashSprites[t.id.toString()] = game.scene.scenes[0].add.sprite(getX(t.pos_x, 60), PET_POS_Y+20, t.type).setScale(2);
+    trashSprites[t.id.toString()] = game.scene.scenes[0].add.sprite(getX(t.pos_x, 60), PET_POS_Y+46, t.type).setScale(2).setOrigin(0.5, 1);
     trashSprites[t.id.toString()].setFlipX(t.flip_x);
     trashLayer.add([trashSprites[t.id.toString()]]);
 }
@@ -220,6 +265,8 @@ function addAction(action) {
         content.innerHTML = `<span class="pseudo">${action.username}</span> nettoie la merde`;
     } else if (action.type === 'give_medicine') {
         content.innerHTML = `<span class="pseudo">${action.username}</span> lui donne un doliprane`;
+    } else if (action.type === 'weed') {
+        content.innerHTML = `<span class="pseudo">${action.username}</span> lui donne de la weed`;
     } else {
         return;
     }
@@ -238,6 +285,7 @@ const channel = sb
     (p) => {
         const newStatus = pets[p.new.id.toString()].status !== p.new.status || pets[p.new.id.toString()].sprite !== p.new.sprite;
         const newFoodLevel = pets[p.new.id.toString()].food !== p.new.food;
+        const newHappyLevel = pets[p.new.id.toString()].happiness !== p.new.happiness;
         const newPosX = pets[p.new.id.toString()].pos_x !== p.new.pos_x;
         const newFlipX = pets[p.new.id.toString()].flip_x !== p.new.flip_x;
 
@@ -251,9 +299,13 @@ const channel = sb
         if (newFoodLevel) {
             updateHearts(p.new);
         }
+        if (newHappyLevel) {
+            updateSmiles(p.new);
+        }
         if (newFlipX) {
-            petSprites[p.new.id].setFlipX(p.new.flip_x);
-            foodSprites[p.new.id].setFlipX(p.new.flip_x);
+            petContainers[p.new.id.toString()].list.forEach(child => {
+                child.setFlipX(p.new.flip_x);
+            });
         }
         if (newPosX) {
             walk(p.new, oldPet);
@@ -272,6 +324,12 @@ const channel = sb
                 foodSprites[pet.id.toString()].setVisible(true);
                 foodSprites[pet.id.toString()].play('consume_burger');
             }
+        } else if (a.new.type === 'weed') {
+            const pet = pets[a.new.pet_id];
+            petModifiers[pet.id.toString()].weed.setVisible(true);
+            setTimeout(() => {
+                petModifiers[pet.id.toString()].weed.setVisible(false);
+            }, 15000);
         }
     }
 )
