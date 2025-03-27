@@ -277,6 +277,10 @@ function addAction(action) {
     children.slice(ACTIONS_COUNT).forEach(child => child.remove());
 }
 
+function updateTopUsers() {
+    console.log("up")
+}
+
 const channel = sb
 .channel('prod')
 .on(
@@ -317,6 +321,10 @@ const channel = sb
     { event: 'INSERT', schema: 'public', table: 'actions' },
     (a) => {
         addAction(a.new);
+
+        if (a.new.useful) {
+            updateTopUsers();
+        }
 
         if (a.new.type === 'feed') {
             const pet = pets[a.new.pet_id];
