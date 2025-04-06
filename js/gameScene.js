@@ -18,6 +18,8 @@ export class GameScene extends Phaser.Scene {
         this.load.image('smile_grey', 'img/smilegrey.png');
         this.load.image('heart_red', 'img/heartred.png');
         this.load.image('heart_grey', 'img/heartgrey.png');
+        this.load.image('drink', 'img/drink.png');
+        this.load.image('drink_grey', 'img/drinkgrey.png');
     }
 
     create() {
@@ -57,6 +59,13 @@ export class GameScene extends Phaser.Scene {
         });
 
         this.anims.create({
+            key: 'puchitomatchi_dry',
+            frames: this.anims.generateFrameNumbers('puchitomatchi', { start: 2, end: 2 }),
+            frameRate: 2,
+            repeat: 0
+        });
+
+        this.anims.create({
             key: 'puchitomatchi_dead',
             frames: this.anims.generateFrameNumbers('puchitomatchi', { start: 12, end: 12 }),
             frameRate: 2,
@@ -76,7 +85,7 @@ export class GameScene extends Phaser.Scene {
         this.petLayer.setDepth(1);
         this.trashLayer.setDepth(0);
 
-        this.add.sprite(180, 66, 'scroll').setScale(2);
+        this.add.sprite(180, 90, 'scroll').setScale(2);
         Object.values(this.gameManager.pets).forEach(pet => pet.addToScene(this));
         Object.values(this.gameManager.trash).forEach(trash => trash.addToScene(this));
     }

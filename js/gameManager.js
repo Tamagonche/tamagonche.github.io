@@ -99,6 +99,8 @@ export class GameManager {
                 left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-syringe"></i></div>`;
             } else if (user.type === 'weed') {
                 left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-cannabis"></i></div>`;
+            } else if (user.type === 'drink') {
+                left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-beer-mug-empty"></i></div>`;
             }
             div.append(left);
             div.append(right);
@@ -136,6 +138,9 @@ export class GameManager {
         } else if (action.type === 'weed') {
             left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-cannabis"></i></div>`;
             content.innerHTML = `<span class="pseudo">${action.username}</span> lui donne de la weed`;
+        } else if (action.type === 'drink') {
+            left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-beer-mug-empty"></i></div>`;
+            content.innerHTML = `<span class="pseudo">${action.username}</span> lui marloute la gueule`;
         } else {
             return;
         }

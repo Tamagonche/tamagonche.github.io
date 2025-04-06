@@ -8,6 +8,7 @@ export class Pet {
         this.container = null;
         this.hearts = [];
         this.smiles = [];
+        this.drinks = [];
     }
 
     addToScene(scene) {
@@ -62,6 +63,7 @@ export class Pet {
 
         this.updateHearts();
         this.updateSmiles();
+        this.updateDrinks();
     }
 
     updateHearts() {
@@ -70,7 +72,7 @@ export class Pet {
         }
         this.hearts = []
         for (let i = 0; i < this.max_food; i++) {
-            this.hearts.push(this.container.scene.add.sprite(this.container.scene.game.config.width/2-40*(this.max_food-1)/2+40*i, 46, this.food >= i+1 ? 'heart_red' : 'heart_grey').setScale(2));
+            this.hearts.push(this.container.scene.add.sprite(this.container.scene.game.config.width/2-40*(this.max_food-1)/2+40*i, 48, this.food >= i+1 ? 'heart_red' : 'heart_grey').setScale(2));
         }
     }
 
@@ -80,7 +82,17 @@ export class Pet {
         }
         this.smiles = [];
         for (let i = 0; i < this.max_happiness; i++) {
-            this.smiles.push(this.container.scene.add.sprite(this.container.scene.game.config.width/2-40*(this.max_happiness-1)/2+40*i, 88, this.happiness >= i+1 ? 'smile' : 'smile_grey').setScale(2));
+            this.smiles.push(this.container.scene.add.sprite(this.container.scene.game.config.width/2-40*(this.max_happiness-1)/2+40*i, 90, this.happiness >= i+1 ? 'smile' : 'smile_grey').setScale(2));
+        }
+    }
+
+    updateDrinks() {
+        for (let sprite of this.drinks) {
+            sprite.destroy();
+        }
+        this.drinks = [];
+        for (let i = 0; i < this.max_drink; i++) {
+            this.drinks.push(this.container.scene.add.sprite(this.container.scene.game.config.width/2-40*(this.max_drink-1)/2+40*i, 132, this.drink >= i+1 ? 'drink' : 'drink_grey').setScale(2));
         }
     }
 
@@ -97,6 +109,7 @@ export class Pet {
         const newStatus = this.status !== newData.status;
         const newFoodLevel = this.food !== newData.food;
         const newHappyLevel = this.happiness !== newData.happiness;
+        const newDrinkLevel = this.drink !== newData.drink;
         const newPosX = this.pos_x !== newData.pos_x;
         const newFlipX = this.flip_x !== newData.flip_x;
 
@@ -112,6 +125,9 @@ export class Pet {
         }
         if (newHappyLevel) {
             this.updateSmiles();
+        }
+        if (newDrinkLevel) {
+            this.updateDrinks();
         }
         if (newFlipX) {
             this.container.list.forEach(child => {
