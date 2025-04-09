@@ -64,6 +64,7 @@ export class GameManager {
 
                 if (a.new.type === 'feed') this.pets[a.new.pet_id.toString()].feed();
                 if (a.new.type === 'weed') this.pets[a.new.pet_id.toString()].giveWeed();
+                if (a.new.type === 'fap') this.pets[a.new.pet_id.toString()].fap();
             })
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'trash' }, t => {
                 this.trash[t.new.id.toString()] = new Trash(t.new);
@@ -101,6 +102,8 @@ export class GameManager {
                 left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-cannabis"></i></div>`;
             } else if (user.type === 'drink') {
                 left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-beer-mug-empty"></i></div>`;
+            } else if (user.type === 'fap') {
+                left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-droplet"></i></div>`;
             }
             div.append(left);
             div.append(right);
@@ -141,6 +144,9 @@ export class GameManager {
         } else if (action.type === 'drink') {
             left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-beer-mug-empty"></i></div>`;
             content.innerHTML = `<span class="pseudo">${action.username}</span> lui marloute la gueule`;
+        } else if (action.type === 'fap') {
+            left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-beer-mug-empty"></i></div>`;
+            content.innerHTML = `<span class="pseudo">${action.username}</span> lui branle le Z`;
         } else {
             return;
         }

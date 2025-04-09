@@ -10,6 +10,7 @@ export class GameScene extends Phaser.Scene {
     preload() {
         this.load.spritesheet('puchitomatchi', 'img/puchitomatchi.png', { frameWidth: 66, frameHeight: 68 });
         this.load.spritesheet('puchitomatchi_weed', 'img/puchitomatchi_weed.png', { frameWidth: 66, frameHeight: 68 });
+        this.load.spritesheet('puchitomatchi_zboub', 'img/puchitomatchi_zboub.png', { frameWidth: 66, frameHeight: 68 });
         this.load.spritesheet('food', 'img/food.png', { frameWidth: 26, frameHeight: 28 });
         this.load.image('scroll', 'img/scroll.png');
         this.load.image('poop', 'img/poop.png');

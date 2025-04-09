@@ -19,9 +19,11 @@ export class Pet {
         this.container.add(this.sprite);
 
         this.modifiers = {
-            weed: scene.add.sprite(0, 0, this.sprite_type+'_weed').setScale(2).setVisible(false),
+            weed: scene.add.sprite(0, 0, this.sprite_type+'_weed').setScale(2).setVisible(true),
+            zboub: scene.add.sprite(0, 0, this.sprite_type+'_zboub').setScale(2).setVisible(true),
         };
         this.container.add(this.modifiers.weed);
+        this.container.add(this.modifiers.zboub);
 
         // Sync modifiers
         this.sprite.on('animationstart', (_, frame) => {
@@ -98,7 +100,7 @@ export class Pet {
 
     getX() {
         let petWidth = this.sprite.displayWidth+12*this.sprite.scale;
-        return (this.container.scene.game.config.width-petWidth/2)*this.pos_x+petWidth/4;
+        return Math.round((this.container.scene.game.config.width-petWidth/2)*this.pos_x+petWidth/4);
     }
 
     statusToAnim(status) {
@@ -169,6 +171,13 @@ export class Pet {
         this.modifiers.weed.setVisible(true);
         setTimeout(() => {
             this.modifiers.weed.setVisible(false);
+        }, 15000);
+    }
+
+    fap() {
+        this.modifiers.zboub.setVisible(true);
+        setTimeout(() => {
+            this.modifiers.zboub.setVisible(false);
         }, 15000);
     }
 }
