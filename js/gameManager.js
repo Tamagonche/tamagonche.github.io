@@ -145,7 +145,7 @@ export class GameManager {
             left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-beer-mug-empty"></i></div>`;
             content.innerHTML = `<span class="pseudo">${action.username}</span> lui marloute la gueule`;
         } else if (action.type === 'fap') {
-            left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-beer-mug-empty"></i></div>`;
+            left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-droplet"></i></div>`;
             content.innerHTML = `<span class="pseudo">${action.username}</span> lui branle le Z`;
         } else {
             return;
