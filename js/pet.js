@@ -19,8 +19,8 @@ export class Pet {
         this.container.add(this.sprite);
 
         this.modifiers = {
-            weed: scene.add.sprite(0, 0, this.sprite_type+'_weed').setScale(2).setVisible(true),
-            zboub: scene.add.sprite(0, 0, this.sprite_type+'_zboub').setScale(2).setVisible(true),
+            weed: scene.add.sprite(0, 0, this.sprite_type+'_weed').setScale(2).setVisible(false),
+            zboub: scene.add.sprite(0, 0, this.sprite_type+'_zboub').setScale(2).setVisible(false),
         };
         this.container.add(this.modifiers.weed);
         this.container.add(this.modifiers.zboub);
