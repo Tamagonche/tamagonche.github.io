@@ -2,7 +2,7 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 import { GameScene } from './gameScene.js';
 import { Pet } from './pet.js';
 import { Trash } from './trash.js';
-import { ACTIONS_COUNT } from './consts.js';
+import { ACTIONS_COUNT, COMMANDS } from './consts.js';
 
 export class GameManager {
     constructor() {
@@ -92,19 +92,10 @@ export class GameManager {
             right.className = 'right';
             right.innerHTML = user.username + ' (' + user.action_count + ')';
 
-            if (user.type === 'feed') {
-                left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-burger"></i></div>`;
-            } else if (user.type === 'clean_trash') {
-                left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-poop"></i></div>`;
-            } else if (user.type === 'give_medicine') {
-                left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-syringe"></i></div>`;
-            } else if (user.type === 'weed') {
-                left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-cannabis"></i></div>`;
-            } else if (user.type === 'drink') {
-                left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-beer-mug-empty"></i></div>`;
-            } else if (user.type === 'fap') {
-                left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-droplet"></i></div>`;
-            }
+            const command = COMMANDS.find(cmd => cmd.id === user.type);
+            if (!command) continue;
+            left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-${command.icon}"></i></div>`;
+
             div.append(left);
             div.append(right);
             document.getElementById('top-users').append(div);
@@ -129,27 +120,10 @@ export class GameManager {
             hour12: false
         });
         const content = document.createElement('div');
-        if (action.type === 'feed') {
-            left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-burger"></i></div>`;
-            content.innerHTML = `<span class="pseudo">${action.username}</span> lui donne à manger`;
-        } else if (action.type === 'clean_trash') {
-            left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-poop"></i></div>`;
-            content.innerHTML = `<span class="pseudo">${action.username}</span> nettoie la merde`;
-        } else if (action.type === 'give_medicine') {
-            left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-syringe"></i></div>`;
-            content.innerHTML = `<span class="pseudo">${action.username}</span> lui donne un doliprane`;
-        } else if (action.type === 'weed') {
-            left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-cannabis"></i></div>`;
-            content.innerHTML = `<span class="pseudo">${action.username}</span> lui donne de la weed`;
-        } else if (action.type === 'drink') {
-            left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-beer-mug-empty"></i></div>`;
-            content.innerHTML = `<span class="pseudo">${action.username}</span> lui marloute la gueule`;
-        } else if (action.type === 'fap') {
-            left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-droplet"></i></div>`;
-            content.innerHTML = `<span class="pseudo">${action.username}</span> lui branle le Z`;
-        } else {
-            return;
-        }
+        const command = COMMANDS.find(cmd => cmd.id === action.type);
+        if (!command) return;
+        left.innerHTML = `<div class="action-icon"><i class="fa-solid fa-${command.icon}"></i></div>`;
+        content.innerHTML = command.actionContentFn(action);
         right.appendChild(time);
         right.appendChild(content);
         div.appendChild(left);
