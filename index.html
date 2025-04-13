@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Quantico:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 
     <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
     <!-- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> -->
@@ -25,10 +26,20 @@
       background: #ffbd00;
     }
 
-    body {
+    #loading {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    #game {
       display: grid;
       grid-template-rows: auto 1fr;
-      grid-template-columns: 300px 1fr 400px;
+      grid-template-columns: 1fr 500px 32px;
+      width: 100%;
       height: 100vh;
       background: url('img/background.png');
       background-size: 438px 316px;
@@ -55,14 +66,45 @@
 
     #sidebar-left {
       z-index: 2;
-    }
-    #sidebar-right {
       width: 100%;
       max-width: 400px;
       height: 100%;
       max-height: 100%;
       overflow-y: auto;
+    }
+    #sidebar-right {
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
+      max-height: 100%;
+      overflow-y: auto;
       z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: end;
+    }
+
+    .navbar {
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .navbar-item {
+      border-radius: 4px;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 4px 0;
+      cursor: pointer;
+    }
+    .navbar-item.selected {
+      background: #000;
+      color: #fff;
     }
 
     .card {
@@ -77,6 +119,8 @@
       border-image-width: 24px 18px;
       border-image-outset: 12 9;
       border-image-repeat: repeat;
+      max-height: calc(100% - 56px);
+      overflow-y: auto;
     }
     .card-title {
       text-align: center;
@@ -90,13 +134,28 @@
     .card-title > span {
       font-size: 26px;
     }
+    .card-subtitle {
+      text-align: center;
+      font-size: 14px;
+      padding: 4px 12px;
+      margin-bottom: 12px;
+    }
     .card-content {
       padding: 0px;
+    }
+    #top-users-container {
+      display: flex;
+    }
+    #top-users {
+      display: flex;
+      flex-direction: column;
+      margin: auto;
     }
     .action, .top-user {
       display: flex;
       align-items: center;
       margin-bottom: 10px;
+      margin-right: 12px;
     }
     .action > .right > .time {
       color: #00000066;
@@ -150,7 +209,7 @@
     #ground {
       position: absolute;
       top: 50%;
-      left: -300px;
+      left: 0;
       width: 100vw;
       height: 360px;
       transform: translateY(-50%);
@@ -166,10 +225,33 @@
       z-index: 1;
       pointer-events: none;
     }
+    .hide {
+      display: none;
+    }
+    #users-table-container > table {
+      font-size: 11px;
+      white-space: nowrap;
+      border-spacing: 0px;
+      width: auto;
+    }
+    #users-table-container > table td {
+      border-top: 1px solid #000;
+      padding: 0;
+      margin: 0;
+      text-align: center;
+      width: auto;
+    }
+    #users-table-container > table td:first-of-type {
+      text-align: right;
+      width: 1%;
+    }
+    #users-table-container > table th {
+      font-size: 16px;
+    }
     @media (max-width: 1068px) {
-      body {
+      #game {
         grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr 1fr 1fr;
+        grid-template-rows: auto 1fr 1fr;
       }
       #canvas-container {
         margin-top: 12px;
@@ -178,56 +260,79 @@
         left: 0;
         width: 100%;
       }
-      #sidebar-left {
-        order: 1;
-        margin-top: 15px;
-      }
       #sidebar-right {
         order: 2;
         max-width: 100%;
         overflow-y: visible;
+        margin-top: 12px;
+      }
+      #navbar {
+        display: none;
+      }
+      .hide {
+        display: block;
+      }
+      .card {
+        width: calc(100% - 46px) !important;
       }
     }
     </style>
   </head>
   <body>
-    <div class="status-bar">
-      Tamagonche v0.9.0 -
-      <a target="_blank" href="https://onche.org/topic/817382/tamagonche">topic</a> -
-      <a target="_blank" href="https://github.com/Tamagonche/tamagonche.github.io">source (site)</a> -
-      <a target="_blank" href="https://github.com/Tamagonche/bot/blob/main/main.py">source (bot)</a> -
-      <a target="_blank" href="https://jvflux.fr/Tamagonche">jvflux</a>
-    </div>
-    <div id="sidebar-left">
-      <div class="card" style="margin-bottom: 58px;">
-        <div class="card-title"><span>T</span>OP <span>K</span>HEYS</div>
-        <div id="top-users" class="card-content"></div>
+    <div id="loading">CHARGEMENT...</div>
+    <div id="game" style="display: none;">
+      <div class="status-bar">
+        Tamagonche v0.10.0 -
+        <a target="_blank" href="https://onche.org/topic/817382/tamagonche">topic</a> -
+        <a target="_blank" href="https://github.com/Tamagonche/tamagonche.github.io">source (site)</a> -
+        <a target="_blank" href="https://github.com/Tamagonche/bot/blob/main/main.py">source (bot)</a> -
+        <a target="_blank" href="https://jvflux.fr/Tamagonche">jvflux</a>
       </div>
-      <div class="card">
-        <div class="card-title"><span>C</span>OMMANDES</div>
-        <div class="card-content">
-          <div style="text-align: center;">Plus d'infos sur <a href="https://jvflux.fr/Tamagonche#Commandes" target="_blank" style="color: black;">JVFlux</a></div>
-          <div class="command-list">
-            <div><span class="command">/nourrir</span><span>: +1 </span><img src="img/heartred.png"></div>
-            <div><span class="command">/nettoyer</span><span>: </span><img src="img/nettoyer.png"></div>
-            <div><span class="command">/doliprane</span><span>: </span><img src="img/medicine.png"></div>
-            <div><span class="command">/weed</span><span>: +1 </span><img src="img/smile.png"></div>
-            <div><span class="command">/marloute</span><span>: +1 </span><img src="img/drink.png"><span> -1 </span><img src="img/smile.png"></div>
-            <div><span class="command">/branle</span><span>: +1 </span><img src="img/smile.png"></div>
-            <div><span class="command">/battre</span><span>: -1 </span><img src="img/smile.png"></div>
+      <div id="canvas-container">
+        <div id="ground"></div>
+        <canvas id="canvas"></canvas>
+      </div>
+      <div id="sidebar-right">
+        <div id="commands" class="card" style="padding: 0 16px;">
+          <div class="card-title"><span>C</span>OMMANDES</div>
+          <div class="card-content">
+            <div style="text-align: center;">Plus d'infos sur <a href="https://jvflux.fr/Tamagonche#Commandes" target="_blank" style="color: black;">JVFlux</a></div>
+            <div class="command-list">
+              <div><span class="command">/nourrir</span><span>: +1 </span><img src="img/heartred.png"></div>
+              <div><span class="command">/nettoyer</span><span>: </span><img src="img/nettoyer.png"></div>
+              <div><span class="command">/doliprane</span><span>: </span><img src="img/medicine.png"></div>
+              <div><span class="command">/weed</span><span>: +1 </span><img src="img/smile.png"></div>
+              <div><span class="command">/marloute</span><span>: +1 </span><img src="img/drink.png"><span> -1 </span><img src="img/smile.png"></div>
+              <div><span class="command">/branle</span><span>: +1 </span><img src="img/smile.png"></div>
+              <div><span class="command">/battre</span><span>: -1 </span><img src="img/smile.png"></div>
+            </div>
           </div>
         </div>
+        <div id="top_kheys" class="card">
+          <div class="card-title"><span>T</span>OP <span>K</span>HEYS</div>
+          <div class="card-content">
+            <div id="top-users-container">
+              <div id="top-users"></div>
+            </div>
+          </div>
+        </div>
+        <div id="history" class="card">
+          <div class="card-title"><span>H</span>ISTORIQUE</div>
+          <div id="actions" class="card-content"></div>
+        </div>
+        <div id="stats" class="card" style="width: 400px;">
+          <div class="card-title"><span>A</span>CTIONS PAR JOUR</div>
+          <div id="daily-actions-container" style="width: 100%; overflow: hidden;"></div>
+          <div class="card-title"><span>H</span>ISTORIQUE DES STATS</div>
+          <div id="pet-history-container" style="width: 100%; overflow: hidden;"></div>
+        </div>
+        <div id="users" class="card">
+          <div class="card-title"><span>J</span>OUEURS</div>
+          <div class="card-subtitle">Chaque case contient deux nombres: à gauche du '/' se trouve le total, et à droite, le nombre d'actions qui ont eu un impact sur l'état du Tamagonche.</div>
+          <div id="users-table-container"></div>
+        </div>
       </div>
-    </div>
-    <div id="canvas-container">
-      <div id="ground"></div>
-      <canvas id="canvas"></canvas>
-    </div>
-    <div id="sidebar-right">
-      <div class="card">
-        <div class="card-title"><span>H</span>ISTORIQUE</div>
-        <div id="actions" class="card-content"></div>
-      </div>
+      <div id="navbar" class="navbar"></div>
     </div>
     <script src="js/main.js" type="module"></script>
 </body>

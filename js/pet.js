@@ -1,3 +1,4 @@
+import { updateFavicon } from './utils.js';
 import { PET_SPEED, PET_POS_Y, FOOD_POS_Y } from './consts.js';
 
 export class Pet {
@@ -34,6 +35,7 @@ export class Pet {
                     this.modifiers[key].setFrame(frame.textureFrame);
                 }
             }
+            updateFavicon(this.createFavicon(scene));
         });
         this.sprite.on('animationupdate', (_, frame) => {
             for (let key in this.modifiers) {
@@ -41,6 +43,7 @@ export class Pet {
                     this.modifiers[key].setFrame(frame.textureFrame);
                 }
             }
+            updateFavicon(this.createFavicon(scene));
         });
         this.sprite.on('animationend', (_, frame) => {
             for (let key in this.modifiers) {
@@ -48,6 +51,7 @@ export class Pet {
                     this.modifiers[key].setFrame(frame.textureFrame);
                 }
             }
+            updateFavicon(this.createFavicon(scene));
         });
 
 
@@ -121,17 +125,22 @@ export class Pet {
 
         Object.assign(this, newData);
 
+        let statUpdated = false;
+
         if (newStatus) {
             this.sprite.play(this.statusToAnim());
         }
         if (newFoodLevel) {
             this.updateHearts();
+            statUpdated = true;
         }
         if (newHappyLevel) {
             this.updateSmiles();
+            statUpdated = true;
         }
         if (newDrinkLevel) {
             this.updateDrinks();
+            statUpdated = true;
         }
         if (newFlipX) {
             this.container.list.forEach(child => {
@@ -141,6 +150,8 @@ export class Pet {
         if (newPosX) {
             this.walk(oldX);
         }
+
+        return statUpdated;
     }
 
     walk(oldX) {
@@ -158,6 +169,18 @@ export class Pet {
                 onComplete: () => this.sprite.play(this.statusToAnim()),
             });
         }
+    }
+
+    createFavicon(scene) {
+        const renderTexture = scene.make.renderTexture({
+            width: this.sprite.width,
+            height: this.sprite.height,
+            add: false
+        });
+
+        renderTexture.draw(this.container, this.sprite.width / 2, 0);
+
+        return renderTexture.texture.canvas.toDataURL('image/png');
     }
 
     // ACTIONS

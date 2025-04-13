@@ -1,7 +1,8 @@
 export class Command {
-    constructor(id, icon, actionContentFn) {
+    constructor(id, icon, cmd, actionContentFn) {
         this.id = id;
         this.icon = icon;
+        this.cmd = cmd;
         this.actionContentFn = actionContentFn;
     }
 }
