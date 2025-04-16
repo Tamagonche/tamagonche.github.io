@@ -21,10 +21,12 @@ export class Pet {
 
         this.modifiers = {
             weed: scene.add.sprite(0, 0, this.sprite_type+'_weed').setScale(2).setVisible(false),
+            sweat: scene.add.sprite(0, 0, this.sprite_type+'_sweat').setScale(2).setVisible(false),
             blood: scene.add.sprite(0, 0, this.sprite_type+'_blood').setScale(2).setVisible(false),
             zboub: scene.add.sprite(0, 0, this.sprite_type+'_zboub').setScale(2).setVisible(false),
         };
         this.container.add(this.modifiers.weed);
+        this.container.add(this.modifiers.sweat);
         this.container.add(this.modifiers.blood);
         this.container.add(this.modifiers.zboub);
 
@@ -210,6 +212,13 @@ export class Pet {
         this.modifiers.blood.setVisible(true);
         setTimeout(() => {
             this.modifiers.blood.setVisible(false);
+        }, 15000);
+    }
+
+    sweat() {
+        this.modifiers.sweat.setVisible(true);
+        setTimeout(() => {
+            this.modifiers.sweat.setVisible(false);
         }, 15000);
     }
 }

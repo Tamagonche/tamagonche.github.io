@@ -29,6 +29,7 @@ export const COMMANDS = [
   new Command("drink", "beer-mug-empty", "/marloute", action => `<span class="pseudo">${action.username}</span> lui marloute la gueule`),
   new Command("fap", "droplet", "/branle", action => `<span class="pseudo">${action.username}</span> lui branle le Z`),
   new Command("punch", "hand-fist", "/battre", action => `<span class="pseudo">${action.username}</span> lui démonte la tronche`),
+  new Command("sweat", "fire", "/sueur", action => `<span class="pseudo">${action.username}</span> le fait suer du cul`),
 ];
 
 export const COMMANDS_MAP = COMMANDS.reduce((acc, cmd) => ({...acc, [cmd.id]: cmd}), {});

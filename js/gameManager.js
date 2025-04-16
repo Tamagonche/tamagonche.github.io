@@ -88,6 +88,7 @@ export class GameManager {
                 if (a.new.type === 'weed') this.pets[a.new.pet_id.toString()].giveWeed();
                 if (a.new.type === 'fap') this.pets[a.new.pet_id.toString()].fap();
                 if (a.new.type === 'punch') this.pets[a.new.pet_id.toString()].punch();
+                if (a.new.type === 'sweat') this.pets[a.new.pet_id.toString()].sweat();
             })
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'trash' }, t => {
                 this.trash[t.new.id.toString()] = new Trash(t.new);
