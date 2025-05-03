@@ -52,7 +52,6 @@ export class GameManager {
         await Promise.all([
             this.updateTopUsers(),
             this.setupDailyActions(),
-            this.setupPetHistory(),
             this.setupActionsByUser(),
         ]);
         window.addEventListener('resize', () => {
@@ -68,10 +67,7 @@ export class GameManager {
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pets' }, p => {
                 const pet = this.pets[p.new.id.toString()];
                 if (pet) {
-                    const statUpdated = pet.updateData(p.new);
-                    if (statUpdated) {
-                        this.setupPetHistory();
-                    }
+                    pet.updateData(p.new);
                 }
             })
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'actions' }, a => {
@@ -131,99 +127,7 @@ export class GameManager {
             this.dailyActionsChart.setSize(1, 1, false);
             const a = document.getElementById("daily-actions-container");
             this.petHistoryChart.setSize(a.offsetWidth, 200, false);
-            const b = document.getElementById("pet-history-container");
-            this.dailyActionsChart.setSize(b.offsetWidth, 300, false);
         } catch (e) {}
-    }
-    async setupPetHistory() {
-        const { data: petsHistoryData } = await this.sb.from('pets_history').select();
-        let lastX = null;
-        const dataByPet = petsHistoryData.reduce((acc, h) => {
-            if (!acc[h.pet_id.toString()]) {
-                acc[h.pet_id.toString()] = {};
-            }
-            if (!acc[h.pet_id.toString()][h.stat_type]) {
-                acc[h.pet_id.toString()][h.stat_type] = [];
-            }
-
-            if (new Date(h.created_at) > new Date(lastX)) {
-                lastX = h.created_at
-            }
-
-            acc[h.pet_id.toString()][h.stat_type].push([h.created_at, h.stat_value]);
-            return acc;
-        }, {});
-        const series = Object.entries(dataByPet["1"]).map(([stat, serie]) => {
-            if (!STATS[stat]) return null;
-            return {
-                name: STATS[stat],
-                data: (() => {
-                    const lastPoint = serie[serie.length - 1];
-                    const extendedPoint = [lastX, lastPoint[1]];
-                    return [...serie, extendedPoint];
-                })(),
-            }
-        }).filter(x => x);
-
-        this.petHistoryChart = Highcharts.chart('pet-history-container', {
-            chart: {
-                animation: false,
-                backgroundColor: null,
-                marginTop: 0,
-                height: 200,
-                reflow: false,
-            },
-            title: {
-                text: null
-            },
-            subtitle: {
-                text: null
-            },
-
-            xAxis: {
-                visible: false,
-                type: 'datetime',
-                labels: {
-                    rotation: 45,
-                    style: {
-                        fontSize: '10px'
-                    }
-                },
-                tickInterval: 24 * 3600 * 1000,
-            },
-            yAxis: {
-                visible: false,
-                maxPadding: 0.02,
-                startOnTick: false,
-                endOnTick: false,
-            },
-
-            legend: {
-                layout: 'horizontal',
-                align: 'center',
-                verticalAlign: 'bottom'
-            },
-
-            plotOptions: {
-                series: {
-                    label: {
-                        connectorAllowed: false
-                    },
-                    step: 'left',
-                    lineWidth: 2,
-
-                    dataLabels: {
-                        enabled: false
-                    },
-                }
-            },
-
-            series,
-
-            tooltip: {
-                xDateFormat: '%d/%m/%Y',
-            },
-        });
     }
     async setupDailyActions() {
         const { data: data } = await this.sb.from('daily_action_count').select();

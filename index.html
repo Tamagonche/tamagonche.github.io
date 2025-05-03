@@ -57,6 +57,7 @@
 
     #canvas-container {
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       width: 100%;
@@ -282,7 +283,7 @@
     <div id="loading">CHARGEMENT...</div>
     <div id="game" style="display: none;">
       <div class="status-bar">
-        Tamagonche v0.11.0 -
+        Tamagonche v0.12.0 -
         <a target="_blank" href="https://onche.org/topic/817382/tamagonche">topic</a> -
         <a target="_blank" href="https://github.com/Tamagonche/tamagonche.github.io">source (site)</a> -
         <a target="_blank" href="https://github.com/Tamagonche/bot/blob/main/main.py">source (bot)</a> -
@@ -309,6 +310,17 @@
             </div>
           </div>
         </div>
+        <div id="countdown" class="card" style="padding: 0 16px;">
+          <div class="card-title"><span>C</span>OMPTEURS</div>
+          <div class="card-content">
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 5px 0;">
+              <div style="display: flex; align-items: center; height: 20px; margin-right: 5px; margin-bottom: 8px;"><img src="img/heartred.png" style="margin-right: 5px;"><div id="heart-countdown" style="width: 45px;"></div></div>
+              <div style="display: flex; align-items: center; height: 20px; margin-right: 5px; margin-bottom: 8px;"><img src="img/smile.png" style="margin-right: 5px;"><div id="happy-countdown" style="width: 45px;"></div></div>
+              <div style="display: flex; align-items: center; height: 20px; margin-right: 5px; margin-bottom: 8px;"><img src="img/drink.png" style="margin-right: 5px;"><div id="drink-countdown" style="width: 45px;"></div></div>
+              <div style="display: flex; align-items: center; height: 20px; margin-left: -10px; margin-bottom: 8px;"><img src="img/poop.png" style="margin-right: 5px;"><div id="trash-countdown" style="width: 45px;"></div></div>
+            </div>
+          </div>
+        </div>
         <div id="top_kheys" class="card">
           <div class="card-title"><span>T</span>OP <span>K</span>HEYS</div>
           <div class="card-content">
@@ -324,8 +336,6 @@
         <div id="stats" class="card" style="width: 400px;">
           <div class="card-title"><span>A</span>CTIONS PAR JOUR</div>
           <div id="daily-actions-container" style="width: 100%; overflow: hidden;"></div>
-          <div class="card-title"><span>H</span>ISTORIQUE DES STATS</div>
-          <div id="pet-history-container" style="width: 100%; overflow: hidden;"></div>
         </div>
         <div id="users" class="card">
           <div class="card-title"><span>J</span>OUEURS</div>
