@@ -55,6 +55,13 @@ export class GameScene extends Phaser.Scene {
         });
 
         this.anims.create({
+            key: 'puchitomatchi_hungry',
+            frames: this.anims.generateFrameNumbers('puchitomatchi', { start: 2, end: 2 }),
+            frameRate: 2,
+            repeat: 0
+        });
+
+        this.anims.create({
             key: 'puchitomatchi_sick',
             frames: this.anims.generateFrameNumbers('puchitomatchi', { start: 13, end: 13 }),
             frameRate: 2,
