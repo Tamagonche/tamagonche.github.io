@@ -249,6 +249,25 @@
     #users-table-container > table th {
       font-size: 16px;
     }
+    body.happy #happy {
+      display: flex;
+    }
+    body.happy #canvas, body.happy #ground {
+      display: none;
+    }
+    #happy {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      max-width: 450px;
+    }
+    #happy-img {
+      width: 368px;
+      height: 98px;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      margin-bottom: 6px;
+    }
     @media (max-width: 1068px) {
       #game {
         grid-template-columns: 1fr;
@@ -290,6 +309,17 @@
         <a target="_blank" href="https://jvflux.fr/Tamagonche">jvflux</a>
       </div>
       <div id="canvas-container">
+        <div id="happy">
+          <img id="happy-img" src="img/happy.png">
+          <div id="happy-card" class="card" style="padding: 0 16px;">
+            <div class="card-content" style="margin-top: 8px">
+              Après tant de jours passés à fumer, marlouter, se faire battre, et se faire violer, Tamagonche a finalement trouvé sa voie et est sorti de la boucle. Grâce à votre attention et amour, il est devenu fort, curieux, et plein de vie.<br><br>
+              Un jour, au détour d’un chemin bordé de fleurs lumineuses, il rencontra une Tamagonchette, douce et charmante. Le lien entre eux fut immédiat. Ensemble, ils construisirent un nid chaleureux, un refuge paisible où bientôt vinrent au monde de petits Tamabébés aussi espiègles que tendres.<br><br>
+              Tamagonche n’est plus seul. Il vit maintenant heureux, entouré de sa famille, dans un monde que vous avez contribué à rendre meilleur. Et même si son aventure avec vous touche à sa fin, son histoire continue, pleine de rires, de découvertes... et d’amour.
+            </div>
+            <div class="card-title"><span>F</span>in</div>
+          </div>
+        </div>
         <div id="ground"></div>
         <canvas id="canvas"></canvas>
       </div>

@@ -39,6 +39,9 @@ export class GameManager {
     async loadData() {
         const { data: petsData } = await this.sb.from('pets').select();
         this.pets = Object.fromEntries(petsData.map(p => [p.id.toString(), new Pet(p)]));
+        if (this.pets["1"] && this.pets["1"].end) {
+            this.updateEnd(true);
+        }
 
         const { data: trashData } = await this.sb.from('trash').select();
         this.trash = Object.fromEntries(trashData.map(t => [t.id.toString(), new Trash(t)]));
@@ -62,11 +65,20 @@ export class GameManager {
         document.getElementById("game").style.display = "grid";
     }
 
+    updateEnd(end) {
+        if (end) {
+            document.body.classList.add("happy");
+        } else {
+            document.body.classList.remove("happy");
+        }
+    }
+
     setupListeners() {
         this.sb.channel('prod')
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'pets' }, p => {
                 const pet = this.pets[p.new.id.toString()];
                 if (pet) {
+                    this.updateEnd(p.new.end);
                     pet.updateData(p.new);
                 }
             })
